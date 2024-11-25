@@ -760,74 +760,68 @@ else:
 
 
 9.Chatbot
-
-pip install wikipedia
-pip install youtube-search-python
-pip install requests
-
-import wikipedia
-from youtubesearchpython import VideosSearch
-import requests
-import json
-from datetime import datetime
-from googlesearch import search
+import time
 
 
-def simple_chatbot():
-   print("Bot: Hi! I can help you with: Wikipedia, YouTube, Weather, or general chat!")
- 
-   responses = {
-       "hello": "Hi there!",
-       "how are you": "I'm doing well, thanks!",
-       "bye": "Goodbye!",
-       "name": "My name is SimpleBot"
-   }
- 
-   while True:
-       user_input = input("You: ").lower()
-     
-       if user_input == "quit":
-           break
-         
-       # Wikipedia search
-       elif "wiki" in user_input or "wikipedia" in user_input:
-           try:
-               query = user_input.replace("wiki", "").replace("wikipedia", "").strip()
-               result = wikipedia.summary(query, sentences=2)
-               print("Bot:", result)
-           except:
-               print("Bot: Couldn't find that on Wikipedia.")
-             
-       # YouTube search
-       elif "youtube" in user_input or "video" in user_input:
-           try:
-               query = user_input.replace("youtube", "").replace("video", "").strip()
-               results = YoutubeSearch(query, max_results=1).to_dict()
-               if results:
-                   video_url = f"https://youtube.com{results[0]['url_suffix']}"
-                   print("Bot: Here's a video:", video_url)
-           except:
-               print("Bot: Couldn't find that video.")
+class CustomerSupportChatbot:
+    def __init__(self):
+        self.user_name = ""
+        self.faqs = {
+            "reset password": "To reset your password, click on 'Forgot Password' on the login page, and we'll send you a reset link.",
+            "business hours": "Our business hours are 9 AM to 6 PM, Monday to Friday.",
+            "track order": "You can track your order by logging into your account and visiting the 'My Orders' section.",
+            "update address": "To update your delivery address, go to your account settings, select 'Addresses,' and make changes.",
+            "human agent": "Connecting you to a human agent... Please hold on!",
+        }
+        self.exit_phrases = ["bye", "exit", "quit"]
+
+    def greet_user(self):
+        print("🤖: Hello! Welcome to our Customer Support Chatbot.")
+        time.sleep(1)
+        self.user_name = input("🤖: Before we get started, may I know your name? ").strip()
+        print(f"🤖: Nice to meet you, {self.user_name}! How can I help you today?")
+        print("🤖: You can type your query or choose from these common topics:\n")
+
+    def show_menu(self):
+        print("Here are some common topics I can help with:")
+        print("1. Reset Password")
+        print("2. Business Hours")
+        print("3. Track Order")
+        print("4. Update Delivery Address")
+        print("5. Speak to a Human Agent")
+        print("Type your query or 'bye' to exit.")
+
+    def find_response(self, user_input):
+        user_input = user_input.lower()
+        for keyword in self.faqs.keys():
+            if keyword in user_input:
+                return self.faqs[keyword]
+        return None
+
+    def handle_query(self, user_input):
+        response = self.find_response(user_input)
+        if response:
+            print(f"🤖: {response}")
+            if "human agent" in response:  # Simulating transfer to a human agent
+                print("🤖: Thank you for waiting. A human agent will join shortly.")
+        elif any(phrase in user_input for phrase in self.exit_phrases):
+            print(f"🤖: Thank you for chatting with us, {self.user_name}. Have a great day! 👋")
+            return False
+        else:
+            print("🤖: Hmm, I didn’t catch that. Could you rephrase or ask about something else?")
+        return True
+
+    def run(self):
+        self.greet_user()
+        while True:
+            self.show_menu()
+            user_input = input("\nYou: ").strip()
+            if not self.handle_query(user_input):
+                break
 
 
-
-
-       elif "google" in user_input:
-           try:
-               query = user_input.replace("google", "").strip()
-               for url in search(query, num_results=3):
-                   print("Bot:", url)
-           except:
-               print("Bot: Couldn't perform search.")
-                     
-       # Normal chat responses
-       else:
-           for key in responses:
-               if key in user_input:
-                   print("Bot:", responses[key])
-                   break
-           else:
-               print("Bot: I don't understand that. Try asking about Wikipedia, YouTube, or Weather!")
+# Run the chatbot
 if __name__ == "__main__":
-   print("Bot: Starting up...")
-   simple_chatbot()
+    chatbot = CustomerSupportChatbot()
+    chatbot.run()
+
